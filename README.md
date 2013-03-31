@@ -6,6 +6,8 @@ Add midje-junit-formatter to project.clj
 
 https://clojars.org/midje-junit-formatter
 
+In the root of your project create a .midje.clj file.
+
 .midje.clj
 ```clojure
 (change-defaults :visible-deprecation false
