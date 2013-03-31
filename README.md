@@ -2,6 +2,10 @@
 
 ##Install
 
+Add midje-junit-formatter to project.clj
+
+https://clojars.org/midje-junit-formatter
+
 .midje.clj
 ```clojure
 (change-defaults :visible-deprecation false
