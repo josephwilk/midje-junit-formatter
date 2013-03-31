@@ -1,0 +1,1 @@
+# midje-junit-formatter
