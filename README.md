@@ -13,3 +13,5 @@ https://clojars.org/midje-junit-formatter
                  :emitter 'midje-junit-formatter.core
                  :print-level :print-facts)
 ```
+
+Junit Formatter Report is generated in the project root in the report.xml file.
