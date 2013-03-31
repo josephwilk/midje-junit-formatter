@@ -26,6 +26,6 @@ Add report.xml to post hooks in your project config:
 
 You can now get Jenkins to understand your test results:
 
-![report](http://postimg.org/image/q0sk2bbgr)
+![report](http://s9.postimg.org/4edjlacwf/Screen_Shot_2013_03_31_at_19_46_08.png)
 
 ![report](http://s21.postimg.org/kwhan78br/Screen_Shot_2013_03_31_at_19_46_28.png)
