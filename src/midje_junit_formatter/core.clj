@@ -14,10 +14,8 @@
 (defn- log-to-file-fn []
   (fn [text] (spit report-file text :append true)))
 
-(defn log-fn [& [a-fn]]
-  (if a-fn
-    a-fn
-    (log-to-file-fn)))
+(defn log-fn []
+  (log-to-file-fn))
 
 (defn- log [string]
   (let [log-fn (log-fn)]
