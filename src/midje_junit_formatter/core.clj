@@ -2,6 +2,7 @@
   midje-junit-formatter.core
   (:use midje.emission.util)
   (:require [midje.data.fact :as fact]
+            [midje.config :as config]
             [midje.emission.state :as state]
             [midje.emission.plugins.util :as util]
             [midje.emission.plugins.silence :as silence]
@@ -10,10 +11,13 @@
 
 (def report-file "report.xml")
 
+(defn- log-to-file-fn []
+  (fn [text] (spit report-file text :append true)))
+
 (defn log-fn [& [a-fn]]
   (if a-fn
     a-fn
-    (fn [text] (spit report-file text :append true))))
+    (log-to-file-fn)))
 
 (defn- log [string]
   (let [log-fn (log-fn)]
