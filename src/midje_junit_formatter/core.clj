@@ -10,13 +10,19 @@
 
 (def report-file "report.xml")
 
+(defn log-fn [& [a-fn]]
+  (if a-fn
+    a-fn
+    (fn [text] (spit report-file text :append true))))
+
 (defn- log [string]
-  (spit report-file string :append true))
+  (let [log-fn (log-fn)]
+    (log-fn string)))
 
 (defn- reset-log []
   (spit report-file ""))
 
-(defn- def-fact-cache []
+(defn def-fact-cache []
  (defonce last-fact-as-a-str (atom "")))
 
 (defn- fact-name [fact]
