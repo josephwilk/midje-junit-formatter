@@ -1,5 +1,7 @@
 # midje-junit-formatter
 
+[![Build Status](https://travis-ci.org/josephwilk/midje-junit-formatter.png?branch=master)](https://travis-ci.org/josephwilk/midje-junit-formatter)
+
 ##Install
 
 Add midje-junit-formatter to project.clj
