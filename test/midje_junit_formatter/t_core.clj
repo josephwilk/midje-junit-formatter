@@ -8,7 +8,7 @@
     [midje.emission.plugins.default-failure-lines :as failure-lines]))
 
 (defn innocuously [key & args]
-  (config/with-augmented-config {:emitter 'midje.emission.plugins.junit
+  (config/with-augmented-config {:emitter 'midje-junit-formatter.core
                                  :print-level :print-facts}
     (captured-output (apply (key plugin/emission-map) args))))
 
