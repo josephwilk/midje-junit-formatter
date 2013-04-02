@@ -23,7 +23,7 @@ Turn off ANSI colours when you run midje as part of your build:
 MIDJE_COLORIZE=NONE lein midje
 ```
 
-The Junit Formatter Report is generated "report.xml" in the project root.
+The Junit Formatter Report is generated in "report.xml" in the project root.
 
 ## Jenkins
 
