@@ -16,7 +16,14 @@ In the root of your project create a .midje.clj file.
                  :print-level :print-facts)
 ```
 
-Junit Formatter Report is generated in the project root in the report.xml file.
+Turn off ANSI colours when you run midje as part of your build:
+
+
+```
+MIDJE_COLORIZE=NONE lein midje
+```
+
+The Junit Formatter Report is generated "report.xml" in the project root.
 
 ## Jenkins
 
