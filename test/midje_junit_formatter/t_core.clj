@@ -19,18 +19,30 @@
  {:type :some-prerequisites-were-called-the-wrong-number-of-times, 
    :namespace "midje.emission.plugins.t-junit"})
 
+(fact "starting a fact stream opens a <testsuite>"
+  (innocuously :starting-fact-stream) => (contains "<testsuite>")
+  (provided
+    (plugin/log-fn) => #(println %)))
+
+(fact "closing a fact stream closes </testsuite>"
+  (plugin/def-fact-cache)
+
+  (innocuously :finishing-fact-stream {} {}) => (contains "</testsuite>")
+  (provided
+    (plugin/log-fn) => #(println %)))
+
 (fact "pass produces a <testcase> tag"
   (plugin/def-fact-cache)
   (plugin/starting-to-check-fact test-fact)
 
-  (innocuously :pass) => "<testcase classname=\"blah\" name=\"named\"></testcase>\n"
+  (innocuously :pass) => (contains "<testcase classname='blah' name='named'/>")
   (provided 
     (plugin/log-fn) => #(println %)))
 
-(fact "failure produces a <testcase> containing a <failure> tag"
+(fact "failure produces a <failure> tag"
   (plugin/def-fact-cache)
   (plugin/starting-to-check-fact test-fact)
 
-  (innocuously :fail test-failure-map) => (contains "<testcase classname=\"blah\" name=\"named\">\n<failure type=\":some-prerequisites-were-called-the-wrong-number-of-times\">")
+  (innocuously :fail test-failure-map) => (contains "<failure type=':some-prerequisites-were-called-the-wrong-number-of-times'>")
   (provided 
     (plugin/log-fn) => #(println %)))
