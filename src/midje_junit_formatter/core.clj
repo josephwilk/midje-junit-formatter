@@ -22,8 +22,7 @@
 (defn- reset-log []
   (spit report-file ""))
 
-(defn def-fact-cache []
- (defonce last-fact (atom {})))
+(def last-fact (atom {}))
 
 (defn- fact-name [fact]
   (or (fact/name fact)
@@ -63,7 +62,6 @@
                        :attrs {:classname (escape fact-namespace) :name (escape fact-name)}})))
 
 (defn starting-fact-stream []
-  (def-fact-cache)
   (reset-log)
   (log "<testsuite>"))
 
