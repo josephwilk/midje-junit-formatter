@@ -32,7 +32,16 @@
 (fact "pass produces a <testcase> tag"
   (plugin/starting-to-check-fact test-fact)
 
-  (innocuously :pass) => (contains "<testcase classname='blah' name='named'/>")
+  (innocuously :pass) => (contains "<testcase")
+  (provided
+    (plugin/log-fn) => #(println %)))
+
+(fact "facts have an elapsed time"
+  (plugin/starting-to-check-fact test-fact)
+  (Thread/sleep 3)
+  (plugin/finishing-fact test-fact)
+
+  (innocuously :pass) => (contains "time='")
   (provided
     (plugin/log-fn) => #(println %)))
 

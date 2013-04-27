@@ -7,7 +7,9 @@
             [midje.emission.plugins.util :as util]
             [midje.emission.plugins.silence :as silence]
             [midje.emission.plugins.default-failure-lines :as lines]
+            [clj-time.core :as time]
             [clojure.string :as str]
+            [clojure.core.incubator :refer (dissoc-in)]
             [clojure.xml :as xml :only [emit-element]]))
 
 (def report-file "report.xml")
@@ -29,13 +31,22 @@
       (fact/description fact)
       (str (fact/file fact) ":" (fact/line fact))))
 
+(defn process-fact [fact]
+  (let [elapsed (/ (time/in-msecs (time/interval (-> fact :attrs :start-time)
+                                                 (-> fact :attrs :stop-time)))
+                   1000.0)]
+    (-> fact
+        (dissoc-in [:attrs :start-time])
+        (dissoc-in [:attrs :stop-time])
+        (assoc-in [:attrs :time] elapsed))))
+
 (defn pass []
   (log
     (with-out-str
-      (xml/emit-element @last-fact))))
+      (xml/emit-element (process-fact @last-fact)))))
 
 (defn- testcase-with-failure [failure-map]
-  (let [testcase @last-fact
+  (let [testcase (process-fact @last-fact)
         failure-content (str "<![CDATA[" (apply str (lines/summarize failure-map)) "]]>")
         fail-type (:type failure-map)
         fail-element {:tag :failure
@@ -59,7 +70,10 @@
   (let [fact-namespace (str (fact/namespace fact))
         fact-name (fact-name fact)]
     (reset! last-fact {:tag :testcase
-                       :attrs {:classname (escape fact-namespace) :name (escape fact-name)}})))
+                       :attrs {:classname (escape fact-namespace) :name (escape fact-name) :start-time (time/now)}})))
+
+(defn finishing-fact [fact]
+  (swap! last-fact assoc-in [:attrs :stop-time] (time/now)))
 
 (defn starting-fact-stream []
   (reset-log)
@@ -77,6 +91,7 @@
                                    :pass
                                    :starting-fact-stream
                                    :finishing-fact-stream
-                                   :starting-to-check-fact)))
+                                   :starting-to-check-fact
+                                   :finishing-fact)))
 
 (state/install-emission-map emission-map)
