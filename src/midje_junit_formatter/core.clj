@@ -1,5 +1,6 @@
 (ns ^{:doc "JUnit formatter for Midje output"}
   midje-junit-formatter.core
+  (:import java.io.File)
   (:use midje.emission.util)
   (:require [midje.data.fact :as fact]
             [midje.config :as config]
@@ -12,19 +13,40 @@
             [clojure.core.incubator :refer (dissoc-in)]
             [clojure.xml :as xml :only [emit-element]]))
 
-(def report-file "report.xml")
+(defonce report-file (atom nil))
+(defonce last-fact (atom {}))
+(defonce last-ns (atom nil))
 
 (defn log-fn []
-  (fn [text] (spit report-file text :append true)))
+  (fn [text] (spit @report-file text :append true)))
 
 (defn- log [string]
   (let [log-fn (log-fn)]
     (log-fn string)))
 
-(defn- reset-log []
-  (spit report-file ""))
+(defn escape [s]
+  (if s
+    (str/escape s {\" "&quot;"
+                   \' "&apos;"
+                   \< "&lt;"
+                   \> "&gt;"
+                   \& "&amp;"})
+    ""))
 
-(def last-fact (atom {}))
+(defn- make-report-filename [ns]
+  (.mkdir (File. "target/surefire-reports"))
+  (str "target/surefire-reports/TEST-" (escape (str ns)) ".xml"))
+
+(defn- close-report []
+  (when @report-file
+    (log "</testsuite>"))
+  (reset! report-file nil))
+
+(defn- open-report [ns]
+  (when @report-file
+    (close-report))
+  (reset! report-file (make-report-filename ns))
+  (spit @report-file (str "<testsuite name='" (escape (str ns)) "'>")))
 
 (defn- fact-name [fact]
   (or (fact/name fact)
@@ -55,11 +77,6 @@
         testcase-with-failure (assoc testcase :content [fail-element])]
     testcase-with-failure))
 
-(defn escape [s]
-  (if s
-    (str/escape s {\' "\\'"})
-    ""))
-
 (defn fail [failure-map]
   (let [testcase (testcase-with-failure failure-map)]
     (log
@@ -75,12 +92,13 @@
 (defn finishing-fact [fact]
   (swap! last-fact assoc-in [:attrs :stop-time] (time/now)))
 
-(defn starting-fact-stream []
-  (reset-log)
-  (log "<testsuite>"))
+(defn possible-new-namespace [ns]
+  (when-not (= @last-ns ns)
+    (open-report ns))
+  (reset! last-ns ns))
 
 (defn finishing-fact-stream [midje-counters clojure-test-map]
-  (log "</testsuite>"))
+  (close-report))
 
 (defn make-map [& keys]
   (zipmap keys
@@ -89,7 +107,7 @@
 (def emission-map (merge silence/emission-map
                          (make-map :fail
                                    :pass
-                                   :starting-fact-stream
+                                   :possible-new-namespace
                                    :finishing-fact-stream
                                    :starting-to-check-fact
                                    :finishing-fact)))

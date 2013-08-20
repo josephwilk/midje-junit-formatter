@@ -19,12 +19,12 @@
  {:type :some-prerequisites-were-called-the-wrong-number-of-times,
    :namespace "midje.emission.plugins.t-junit"})
 
-(fact "starting a fact stream opens a <testsuite>"
+#_(fact "starting a fact stream opens a <testsuite>"
   (innocuously :starting-fact-stream) => (contains "<testsuite>")
   (provided
     (plugin/log-fn) => #(println %)))
 
-(fact "closing a fact stream closes </testsuite>"
+#_(fact "closing a fact stream closes </testsuite>"
   (innocuously :finishing-fact-stream {} {}) => (contains "</testsuite>")
   (provided
     (plugin/log-fn) => #(println %)))
